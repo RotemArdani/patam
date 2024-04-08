@@ -26,18 +26,21 @@ public class Tile {
 
 
     public static class Bag {
+        private static Bag single_instance = null;
+        private int size;
         private int bagCount;
         private int[] LetterQuantity; //every letter, and how much we have from it
         private final Tile[] tiles;
 
         private Bag() {
+            size = 26;
             bagCount = 98;
-            LetterQuantity = new int[26];
-            tiles = new Tile[26];
+            LetterQuantity = new int[size];
+            tiles = new Tile[size];
             LetterQuantity = new int[]{9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1};
             int[] score = new int[]{1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10};
             char temp = 'A';
-            for (int i = 0; i < 26; i++) {
+            for (int i = 0; i < size; i++) {
                 this.tiles[i] = new Tile(temp, score[i]);
                 temp++;
             }
@@ -86,20 +89,17 @@ public class Tile {
             return bagCount;
        }
 
-        public int[] getQuantities(){
-            int[] copy=new int[LetterQuantity.length];
-            for (int i=0;i<LetterQuantity.length;i++){
-                copy[i]=LetterQuantity[i];
-            }
+       public int[] getQuantities(){
+            int[] copy=(int[]) LetterQuantity.clone();
             return copy;
         }
 
-//        public static Bag getBag(){
-//
-//        }
+       public static Bag getBag(){
+           if (single_instance == null)
+               single_instance = new Bag();
 
-
-
+           return single_instance;
+       }
 
     }
 }
