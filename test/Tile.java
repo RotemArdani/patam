@@ -27,17 +27,20 @@ public class Tile {
 
     public static class Bag {
         private static Bag single_instance = null;
-        private int size;
+        private final int size;
         private int bagCount;
         private int[] LetterQuantity; //every letter, and how much we have from it
-        private final Tile[] tiles;
+        private final int[] TempLetterQuantity;
+        private Tile[] tiles;
 
         private Bag() {
             size = 26;
             bagCount = 98;
             LetterQuantity = new int[size];
+            TempLetterQuantity = new int[size];
             tiles = new Tile[size];
             LetterQuantity = new int[]{9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2, 6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1};
+            TempLetterQuantity = (int[]) LetterQuantity.clone();
             int[] score = new int[]{1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10};
             char temp = 'A';
             for (int i = 0; i < size; i++) {
@@ -52,7 +55,7 @@ public class Tile {
             Random rand = new Random();
             while (true) {
                 int Index = rand.nextInt(tiles.length);
-                if (LetterQuantity[Index] != 0) {
+                if (LetterQuantity[Index] > -1 ) {
                     LetterQuantity[Index]--;
                     bagCount--;
                     return tiles[Index];
@@ -60,28 +63,23 @@ public class Tile {
             }
         }
 
-        public Tile getTile(char c) {
-            for (int i = 0; i < tiles.length; i++) {
-                if (tiles[i].letter == c) {
-                    if (LetterQuantity[i] > 0) {
-                        LetterQuantity[i]--;
-                        bagCount--;
-                        return tiles[i];
-                    }
-                    else
-                        return null;
-                }
+        public Tile getTile(char ch) {
+            int i = ch - 65;
+            if ((i<LetterQuantity.length) && (i > -1) && (LetterQuantity[i] > 0) {
+                LetterQuantity[i]--;
+                bagCount--;
+                return tiles[i];
             }
-            return null;
+            else
+                return null;
         }
 
+
         public void put(Tile t){
-            for(int i=0;i<tiles.length;i++){
-                if (t.letter==tiles[i].letter) {
-                    LetterQuantity[i]++;
-                    bagCount++;
-                }
-                break;
+            int i = t.letter - 65;
+            if (LetterQuantity[i] +1 <= TempLetterQuantity[i]) {
+                LetterQuantity[i]++;
+                bagCount++;
             }
         }
 
@@ -89,7 +87,7 @@ public class Tile {
             return bagCount;
        }
 
-       public int[] getQuantities(){
+       public int[] getQuantities(){ //the temporary one or the one we work on?
             int[] copy=(int[]) LetterQuantity.clone();
             return copy;
         }
@@ -100,6 +98,7 @@ public class Tile {
 
            return single_instance;
        }
+
 
     }
 }
