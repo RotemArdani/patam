@@ -16,7 +16,8 @@ public class Tile {
     public boolean equals(Object o) {
         if (this == o) return true; //same reference
         if (!(o instanceof Tile tile)) return false;
-        return letter == tile.letter && score == tile.score;
+        Tile t = (Tile) o;
+        return this.letter == t.letter && this.score == t.score;
     }
 
     @Override

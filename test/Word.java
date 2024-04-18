@@ -8,10 +8,9 @@ public class Word {
     public final boolean vertical; //T if its up to down, F if its right to left
 
     public Word(Tile[] t, int row, int col, boolean vertical){
-        this.tiles= Tile[t.length];
-        for(int i=0;i<t.length;t++) {
-            tiles[i]=new Tile(t[i].letter, t[i].score);
-        }
+        this.tiles= new Tile [t.length];
+        for(int i=0;i<t.length;i++) 
+            tiles[i]= t[i];
         this.row=row;
         this.col=col;
         this.vertical=vertical;
