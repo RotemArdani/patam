@@ -62,7 +62,7 @@ public class Board {
         return single_instance;
     }
 
-    public boolean dictionaryLegal(){
+    public boolean dictionaryLegal(Word word){
         return true;
     }
 
@@ -148,10 +148,51 @@ public class Board {
         return false;
     }
 
-    
+    public int tryPlaceWord (Word word){
+        int result=0;
+        if (!boardLegal(word))
+            return 0;
+        else {
+            ArrayList<Word> additionalWords = getWords(word);
+            for (Word i : additionalWords){
+                if (!dictionaryLegal(i))
+                    return 0;
+                else
+                    result += getScore(i);
+            }
+            result += getScore(word); 
+            placeWordInBoard(word);     
+        }
+        return result;
+    }
+
+    private void placeWordInBoard(Word word){
+        int len = word.getTiles().length;
+        int row=word.getRow();
+        int col=word.getCol();
+        boolean vertical = word.isVertical();
+        Tile[] tiles= word.getTiles();
+        for(int i=0;i<len;i++){
+            if (gameBoard[vertical ? row + i : row][vertical ? col : col + i] != null)
+                gameBoard[vertical ? row + i : row][vertical ? col : col + i] = tiles[i];
+        }
+    }
 
     public ArrayList<Word> getWords(Word word){
+        ArrayList<Word> additionalWords = new ArrayList<Word>();
+        additionalWords.add(word);
+        boolean ver=word.isVertical();
+        Tile[] tiles=word.getTiles();
+        int len=word.getTiles().length;
+        if(ver){
+            for (int i=0;i<len;i++){
+                
 
+            }
+
+        }
+
+        return additionalWords;
     }
 
     public Tile[][] getTiles(){

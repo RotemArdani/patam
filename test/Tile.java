@@ -31,7 +31,7 @@ public class Tile {
         private final int size;
         private int bagCount;
         private int[] LetterQuantity; //every letter, and how much we have from it
-        private final int[] TempLetterQuantity;
+        private int[] TempLetterQuantity;
         private Tile[] tiles;
 
         private Bag() {
@@ -66,7 +66,7 @@ public class Tile {
 
         public Tile getTile(char ch) {
             int i = ch - 65;
-            if ((i<LetterQuantity.length) && (i > -1) && (LetterQuantity[i] > 0) {
+            if ((i<LetterQuantity.length) && (i > -1) && (LetterQuantity[i] > 0)) {
                 LetterQuantity[i]--;
                 bagCount--;
                 return tiles[i];
