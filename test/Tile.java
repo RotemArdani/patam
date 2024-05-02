@@ -12,19 +12,31 @@ public class Tile {
         this.score=score;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true; //same reference
-        if (!(o instanceof Tile tile)) return false;
-        Tile t = (Tile) o;
-        return this.letter == t.letter && this.score == t.score;
-    }
 
     @Override
     public int hashCode() {
-        return Objects.hash(letter, score);
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + letter;
+        result = prime * result + score;
+        return result;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Tile other = (Tile) obj;
+        if (letter != other.letter)
+            return false;
+        if (score != other.score)
+            return false;
+        return true;
+    }
 
     public static class Bag {
         private static Bag single_instance = null;
