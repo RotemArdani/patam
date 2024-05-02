@@ -209,23 +209,24 @@ public class Board {
         int row = word.getRow();
         if(ver){
             for (int i=0;i<len;i++){
-                int j=col;
+                int j=col, temp=col;
                 if (tiles[i] != null){
                     if (gameBoard[row+i][j-1] != null || gameBoard[row+i][j+1] != null){
                         while(gameBoard[row+i][j-1] != null && j > -1)
                             j--;
-                        int newRow = row + i;
-                        int newCol = j;
-                        int temp = j;
-                        while (gameBoard[row+i][temp+1] != null && temp+1 < gameBoard.length)
+                        while(gameBoard[row+i][temp] != null && temp < gameBoard.length)
                             temp++;
+                        int newCol = j;
                         Tile[] newtiles = new Tile[temp-j+1];
                         int temp1=0;
-                        while(j<=temp){
-                            newtiles[temp1] = gameBoard[row+i][j];
+                        while(j <= temp){
+                            if (j == col)
+                                newtiles[temp1] = tiles[i];
+                            else
+                                newtiles[temp1] = gameBoard[row+i][j];
                             j++; temp1++;
                         }
-                        additionalWords.add(new Word(newtiles, newRow, newCol, false));
+                        additionalWords.add(new Word(newtiles, row + i, newCol, false));
                     }
                 }
             }
@@ -247,21 +248,10 @@ public class Board {
                                 newtiles[temp1] = tiles[i];
                             else
                                 newtiles[temp1] = gameBoard[j][col+i];
+                            j++; temp1++;
                         }
                         additionalWords.add(new Word(newtiles, newRow, col + i, true));
 
-                            //j++; temp1++;
-                        //}
-                        //int temp = j;
-                        //while (gameBoard[temp][col+i] != null && temp+1 < gameBoard.length)
-                            //temp++;
-                        //Tile[] newtiles = new Tile[temp-j+1];
-                        //int temp1=0;
-                        //while(j<=temp){
-                            //newtiles[temp1] = gameBoard[j][col+i];
-                            //j++; temp1++;
-                        //}
-                        //newtiles[temp1-1] = tiles[i];
                     }
                 }
             }
