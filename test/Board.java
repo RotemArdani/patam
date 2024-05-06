@@ -77,20 +77,14 @@ public class Board {
                 tile = gameBoard[vertical ? row + i : row][vertical ? col : col + i];
             }
             sumword += tile.score;
-            i++;}
-            // if (tile != null)
-            //     sumword += tile.score;
-            // else{
-            //     if (gameBoard[vertical ? row + i : row][vertical ? col : col + i] != null)
-            //         sumword += gameBoard[vertical ? row + i : row][vertical ? col : col + i].score;
-            // }
-        
+            i++;
+        }
         result = calculateScore(vertical, len, tiles, sumword, row, col);
         return result;
     }
     
     private int calculateScore(boolean vertical, int len, Tile[] tiles, int sumword, int row, int col) {
-        int i = 0, result = sumword;
+        int i = 0, result = sumword, doubleWord = 0, trippleWord = 0;
         String stringPosition;
         while (i < len) {
             if (vertical)
@@ -108,32 +102,33 @@ public class Board {
                         result *= 2;
                         break;}
                 case DOUBLEWORD:
-                    result *= 2;
+                    doubleWord += 1;
                     break;
                 case DOUBLETTER:
-                    if (tiles[i] != null)
-                        result = result - tiles[i].score + (tiles[i].score * 2);
-                    else
-                        result = result + (gameBoard[vertical ? row + i : row][vertical ? col : col + i].score * 3);
+                    result = result - tiles[i].score + (tiles[i].score * 2);
                     break;
                 case TRIPPLEWORD:
-                    result = result * 3;
+                    trippleWord += 1;
                     break;
                 case TRIPPLELETTER:
-                    if (tiles[i] != null)
-                        result = result - tiles[i].score + (tiles[i].score * 3);
-                    else
-                        result = result + (gameBoard[vertical ? row + i : row][vertical ? col : col + i].score * 3);
+                    result = result - tiles[i].score + (tiles[i].score * 3);
                     break;
                 default:
                     break;
             }}
             i++;
         }
+        if (trippleWord != 0)
+            result = result * trippleWord * 3;
+        if (doubleWord != 0)
+            result = result * doubleWord * 2;
+        
         return result;
     }
     
     public boolean boardLegal(Word word){
+        if(word == null)
+            return false;
         boolean vertical = word.isVertical();
         int len = word.getTiles().length;
         Tile[] tiles = word.getTiles(); 
@@ -145,12 +140,12 @@ public class Board {
         if (!isInBound)
             return false;
         else { //word inbounds
-            if (gameBoard[7][7] == null){
+            if (gameBoard[7][7] == null){ //first turn
                 if (vertical){
-                    if (col == 7 && 7 <= row+len)
+                    if (col == 7 && row <= 7 && 7 <= row+len)
                         return true;
                 } else {
-                    if (row == 7 && 7 <= col+len)
+                    if (row == 7 && col <= 7 && 7 <= col+len)
                         return true;
                 }
                 return false;//first turn must be on [7][7], star
@@ -159,7 +154,7 @@ public class Board {
                 if (vertical){ //up to down
                     for(int i=0;i<len;i++){
                         if (tiles[i] == null){
-                            if (gameBoard[row+i][col] == null)
+                            if (gameBoard[row+i][col] == null) //
                                 return false;
                         }
                         else {
@@ -225,51 +220,50 @@ public class Board {
         int len=word.getTiles().length;
         int col = word.getCol();
         int row = word.getRow();
-        int j, temp, temp1;
+        int j, end, temp1;
         if(ver){
             for (int i=0;i<len;i++){
-                j=col; temp=col;
+                j=col; end=col;
                 if (tiles[i] != null){
                     if (gameBoard[row+i][j-1] != null || gameBoard[row+i][j+1] != null){
                         while(gameBoard[row+i][j-1] != null && j > -1)
                             j--;
-                        while(gameBoard[row+i][temp+1] != null && temp+1 < gameBoard.length)
-                            temp++;
-                        int newCol = j;
-                        Tile[] newtiles = new Tile[temp-j+1];
+                        while(gameBoard[row+i][end+1] != null && end+1 < gameBoard.length)
+                            end++;
+                        int startCol = j;
+                        Tile[] newtiles = new Tile[end-j+1];
                         temp1=0;
-                        while(j <= temp){
+                        while(j <= end){
                             if (j == col)
                                 newtiles[temp1] = tiles[i];
                             else
                                 newtiles[temp1] = gameBoard[row+i][j];
                             j++; temp1++;
                         }
-                        additionalWords.add(new Word(newtiles, row + i, newCol, false));
+                        additionalWords.add(new Word(newtiles, row + i, startCol, false));
                     }
                 }
             }
-
         } else {
             for (int i=0;i<len;i++){
-                j=row; temp=row;
+                j=row; end=row;
                 if (tiles[i] != null){
                     if (gameBoard[j-1][col+i] != null || gameBoard[j+1][col+i] != null){
                         while(gameBoard[j-1][col+i] != null && j > -1)
                             j--;
-                        int newRow = j;
-                        while(gameBoard[temp+1][col+i] != null && temp+1 < gameBoard.length)
-                            temp++;
-                        Tile[] newtiles = new Tile[temp-j+1];
+                        int startRow = j;
+                        while(gameBoard[end+1][col+i] != null && end+1 < gameBoard.length)
+                            end++;
+                        Tile[] newtiles = new Tile[end-j+1];
                         temp1=0;
-                        while(j<=temp){
+                        while(j<=end){
                             if (j == row)
                                 newtiles[temp1] = tiles[i];
                             else
                                 newtiles[temp1] = gameBoard[j][col+i];
                             j++; temp1++;
                         }
-                        additionalWords.add(new Word(newtiles, newRow, col + i, true));
+                        additionalWords.add(new Word(newtiles, startRow, col + i, true));
                     }
                 }
             }
