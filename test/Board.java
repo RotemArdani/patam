@@ -73,14 +73,18 @@ public class Board {
         int col = word.getCol();
         int result = 0, sumword = 0, i = 0;
         for (Tile tile : tiles) {
-            if (tile != null)
-                sumword += tile.score;
-            else{
-                if (gameBoard[vertical ? row + i : row][vertical ? col : col + i] != null)
-                    sumword += gameBoard[vertical ? row + i : row][vertical ? col : col + i].score;
+            if (tile == null){
+                tile = gameBoard[vertical ? row + i : row][vertical ? col : col + i];
             }
-            i++;
-        }
+            sumword += tile.score;
+            i++;}
+            // if (tile != null)
+            //     sumword += tile.score;
+            // else{
+            //     if (gameBoard[vertical ? row + i : row][vertical ? col : col + i] != null)
+            //         sumword += gameBoard[vertical ? row + i : row][vertical ? col : col + i].score;
+            // }
+        
         result = calculateScore(vertical, len, tiles, sumword, row, col);
         return result;
     }
@@ -122,7 +126,6 @@ public class Board {
                         result = result + (gameBoard[vertical ? row + i : row][vertical ? col : col + i].score * 3);
                     break;
                 default:
-                    System.out.println("not a special position");
                     break;
             }}
             i++;
@@ -139,18 +142,27 @@ public class Board {
         boolean isInBound = (vertical && row+len < gameBoard.length && col<gameBoard.length) || (!vertical && col+len < gameBoard.length && row<gameBoard.length);
         if (row < 0 || col < 0)
             return false;
-        if(!isInBound)
+        if (!isInBound)
             return false;
         else { //word inbounds
             if (gameBoard[7][7] == null){
-                if (row == 7 || col == 7)
-                    return true; 
+                if (vertical){
+                    if (col == 7 && 7 <= row+len)
+                        return true;
+                } else {
+                    if (row == 7 && 7 <= col+len)
+                        return true;
+                }
                 return false;//first turn must be on [7][7], star
                 }
             else { //not first turn + word inbounds
                 if (vertical){ //up to down
                     for(int i=0;i<len;i++){
-                        if (tiles[i] != null){
+                        if (tiles[i] == null){
+                            if (gameBoard[row+i][col] == null)
+                                return false;
+                        }
+                        else {
                             if (gameBoard[row+i][col] != null && gameBoard[row+i][col] != tiles[i])
                                 return false;
                         }
@@ -159,7 +171,11 @@ public class Board {
                 }
                 else { //left to right
                     for(int i=0;i<len;i++){
-                        if (tiles[i] != null){
+                        if (tiles[i] == null){
+                            if (gameBoard[row][col+i] == null)
+                                return false;
+                        }
+                        else {
                             if (gameBoard[row][col+i] != null && gameBoard[row][col+i] != tiles[i])
                                 return false;
                         }
@@ -199,6 +215,8 @@ public class Board {
         }
     }
 
+    
+
     public ArrayList<Word> getWords(Word word){
         ArrayList<Word> additionalWords = new ArrayList<Word>();
         additionalWords.add(word);
@@ -207,18 +225,19 @@ public class Board {
         int len=word.getTiles().length;
         int col = word.getCol();
         int row = word.getRow();
+        int j, temp, temp1;
         if(ver){
             for (int i=0;i<len;i++){
-                int j=col, temp=col;
+                j=col; temp=col;
                 if (tiles[i] != null){
                     if (gameBoard[row+i][j-1] != null || gameBoard[row+i][j+1] != null){
                         while(gameBoard[row+i][j-1] != null && j > -1)
                             j--;
-                        while(gameBoard[row+i][temp] != null && temp < gameBoard.length)
+                        while(gameBoard[row+i][temp+1] != null && temp+1 < gameBoard.length)
                             temp++;
                         int newCol = j;
                         Tile[] newtiles = new Tile[temp-j+1];
-                        int temp1=0;
+                        temp1=0;
                         while(j <= temp){
                             if (j == col)
                                 newtiles[temp1] = tiles[i];
@@ -233,7 +252,7 @@ public class Board {
 
         } else {
             for (int i=0;i<len;i++){
-                int j=row, temp=row;
+                j=row; temp=row;
                 if (tiles[i] != null){
                     if (gameBoard[j-1][col+i] != null || gameBoard[j+1][col+i] != null){
                         while(gameBoard[j-1][col+i] != null && j > -1)
@@ -242,7 +261,7 @@ public class Board {
                         while(gameBoard[temp+1][col+i] != null && temp+1 < gameBoard.length)
                             temp++;
                         Tile[] newtiles = new Tile[temp-j+1];
-                        int temp1=0;
+                        temp1=0;
                         while(j<=temp){
                             if (j == row)
                                 newtiles[temp1] = tiles[i];
@@ -251,7 +270,6 @@ public class Board {
                             j++; temp1++;
                         }
                         additionalWords.add(new Word(newtiles, newRow, col + i, true));
-
                     }
                 }
             }
