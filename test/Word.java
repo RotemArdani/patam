@@ -16,6 +16,7 @@ public class Word {
         this.col=col;
         this.vertical=vertical;
     }
+    
     public int getCol() {
         return col;
     }
@@ -60,6 +61,16 @@ public class Word {
         if (vertical != other.vertical)
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        char[] temp = new char[tiles.length];
+        for (int i=0;i<tiles.length;i++){
+            temp[i] = tiles[i].letter;
+        }
+        String resultString = new String(temp);
+        return resultString;
     }
  
 }
